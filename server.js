@@ -24,10 +24,6 @@ server.listen(5000, function(){
 });
 
 // add the websocket handlers
-io.on('connection', function(socket){
-
-});
-
 var players = {};
 io.on('connection', function(socket){
 
@@ -53,6 +49,10 @@ io.on('connection', function(socket){
         if(data.down && !(player.y + 15 > 600)){
             player.y += 5;
         }
+    });
+
+    socket.on('disconnect', reason => {
+        delete players[socket.id];
     });
 });
 
