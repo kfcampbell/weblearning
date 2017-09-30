@@ -41,16 +41,16 @@ io.on('connection', function(socket){
 
     socket.on('movement', function(data){
         var player = players[socket.id] || {};
-        if(data.left){
+        if(data.left && !(player.x - 15 < 0)){
             player.x -= 5;
         }
-        if(data.right){
+        if(data.right && !(player.x + 15 > 800)){
             player.x += 5;
         }
-        if(data.up){
+        if(data.up && !(player.y - 15 < 0)){
             player.y -= 5;
         }
-        if(data.down){
+        if(data.down && !(player.y + 15 > 600)){
             player.y += 5;
         }
     });
