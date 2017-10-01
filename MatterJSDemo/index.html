@@ -2,8 +2,9 @@
 
 <head>
     <title>Matter.js Basics Tutorial</title>
-    <script src="matter.js"></script>
+    <script src="./node_modules/matter-js/build/matter.js"></script>
 </head>
+<h1>Matter.js Basics</h1>
 <style>
     body {
         margin: 0px;
@@ -18,5 +19,220 @@
 <body>
     <canvas id="cv" width="1000" height="1000"></canvas>
 </body>
+<script>
+    const KEY_W = 87;
+    const KEY_A = 65;
+    const KEY_S = 83;
+    const KEY_D = 68;
+    const KEY_SPACE = 32;
+    const KEY_SHIFT = 16;
+
+    var playerOnFloor = false;
+
+    var mouseIsDown = false;
+    var mp;
+    var keys = [];
+
+    var canvas = document.getElementById('cv');
+    var context = canvas.getContext('2d');
+
+    // set canvas inner height to the size of the browser window
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // resize canvas size if screen is resized
+    window.onresize = function (event) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    // aliases to shorten accessing Matter stuff
+    var Engine = Matter.Engine,
+        World = Matter.World,
+        Composites = Matter.Composites,
+        Composite = Matter.Composite,
+        Body = Matter.Body,
+        Bodies = Matter.Bodies,
+        Events = Matter.Events,
+        MouseConstraint = Matter.MouseConstraint,
+        Mouse = Matter.Mouse;
+
+    var engine = Engine.create();
+
+    // hook into mouse
+    mouseConstraint = MouseConstraint.create(engine, { element: canvas });
+    MouseConstraint.create(engine, { element: canvas });
+
+    var playerBody = Bodies.rectangle(window.InnerWidth / 2, 225, 20, 20, { density: 0.002, friction: 0.05 });
+    var playerFloorSensor = Bodies.rectangle(window.InnerWidth / 2, 245, 2, { density: 0, friction: 0.3, isSensor: true });
+
+    var player = Body.create({ parts: [playerBody, playerFloorSensor], friction: 0 });
+    playerBody.col = '#FFDDDD';
+
+    var stackA = Composites.stack(window.innerWidth / 2 - 75, 150, 15, 15, 2, 2, function (x, y) {
+        return Bodies.circle(x, y, 3, { friction: 0 });
+    });
+
+    var wall = Bodies.rectangle(window.innerWidth / 2, window.innerHeight / 2, 500, 20, {
+        isStatic: true,
+        angle: 0.2
+    });
+
+    var wall2 = Bodies.rectangle(window.innerWidth / 2, window.innerHeight / 2, 500, 20, {
+        isStatic: true,
+        angle: -0.2
+    });
+
+    World.add(engine.world, [stackA, wall, wall2, player]);
+
+    // create 4 walls to contain all objects within screen boundaries
+    var offset = 1;
+    var wallSize = 20;
+    World.add(engine.world, [
+        //top
+        Bodies.rectangle(window.innerWidth / 2, -offset, window.innerWidth + 2 * offset, wallSize, {
+            isStatic: true
+        }),
+        //bottom
+        Bodies.rectangle(window.innerWidth / 2, window.innerHeight + offset, window.innerWidth + 2 * offset, wallSize, {
+            isStatic: true
+        }),
+        //right
+        Bodies.rectangle(window.innerWidth + offset, window.innerHeight / 2, wallSize, window.innerHeight + 2 * offset, {
+            isStatic: true
+        }),
+        // left
+        Bodies.rectangle(-offset, window.innerHeight / 2, wallSize, window.innerHeight + 2 * offset, {
+            isStatic: true
+        })
+    ]);
+
+    Engine.run(engine);
+
+    MouseConstraint.create(engine, { element: canvas });
+
+    Events.on(mouseConstraint, 'mousedown', function (event) {
+        var mousePosition = event.mouse.position;
+        mp = mousePosition;
+        mouseIsDown = true;
+    });
+
+    Events.on(mouseConstraint, 'mouseup', function (event) {
+        var mousePosition = event.mouse.position;
+        mp = mousePosition;
+        mouseIsDown = false;
+    });
+
+    Events.on(engine, 'collisionStart', function (event) {
+        var pairs = event.pairs;
+
+        for (var i = 0, j = pairs.length; i != j; ++i) {
+            var pair = pairs[i];
+            if (pair.bodyA === playerFloorSensor || pair.bodyB === playerFloorSensor) {
+                playerBody.col = '#ddddFF';
+            }
+        }
+    });
+
+    Events.on(engine, 'collisionEnd', function (event) {
+        var pairs = event.pairs;
+
+        for (var i = 0, j = pairs.length; i != j; ++i) {
+            var pair = pairs[i];
+            if (pair.bodyA === playerFloorSensor || pair.bodyB === playerFloorSensor) {
+                playerBody.col = '#FFdddd';
+                playerOnFloor = false;
+            }
+        }
+    });
+
+    Events.on(engine, 'collisionActive', function (event) {
+        var pairs = event.pairs;
+
+        for (var i = 0, j = pairs.length; i != j; ++i) {
+            var pair = pairs[i];
+            if (pair.bodyA === playerFloorSensor || pair.bodyB === playerFloorSensor) {
+                playerBody.col = '#DDFFDD';
+                playerOnFloor = true;
+            }
+        }
+    });
+
+
+    // render loop
+    (
+        function render() {
+
+            // keep player at 0 rotation
+            Body.setAngle(player, 0);
+
+            if ((keys[KEY_SPACE] || keys[KEY_W]) && playerOnFloor) {
+                let force = (-0.013 * player.mass);
+                Body.applyForce(player, player.position, { x: 0, y: force });
+            }
+            if (keys[KEY_D]) {
+                let force = (0.0004 * player.mass);
+                Body.applyForce(player, player.position, { x: force, y: 0 });
+            }
+            if (keys[KEY_A]) {
+                let force = (-0.0004 * player.mass);
+                Body.applyForce(player, player.position, { x: force, y: 0 });
+            }
+
+            if (mouseIsDown) {
+                World.add(engine.world, Bodies.rectangle(mp.x, mp.y, 20, 20, { isStatic: true }));
+            }
+
+            var bodies = Composite.allBodies(engine.world);
+
+            // request permission to draw to canvas
+            window.requestAnimationFrame(render);
+
+            // empty canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // draw objects
+            context.beginPath();
+            for (var i = 0; i < bodies.length; i++) {
+                var vertices = bodies[i].vertices;
+                context.moveTo(vertices[0].x, vertices[0].y);
+                for (var j = 1; j < vertices.length; j++) {
+                    context.lineTo(vertices[j].x, vertices[j].y);
+                }
+                context.lineTo(vertices[0].x, vertices[0].y);
+            }
+            context.lineWidth = 1;
+            context.strokeStyle = '#DDDDDD';
+            context.stroke();
+            context.fillStyle = '#FAFAFF';
+            context.fill();
+
+            // fill player separately
+            fillObject(playerBody);
+
+        }
+    )();
+
+    function fillObject(object) {
+        context.beginPath();
+        var vertices = object.vertices;
+        context.moveTo(vertices[0].x, vertices[0].y);
+        for (var j = 1; j < vertices.length; j += 1) {
+            context.lineTo(vertices[j].x, vertices[j].y);
+        }
+        context.lineTo(vertices[0].x, vertices[0].y);
+        context.fillStyle = object.col;
+        context.fill();
+    }
+
+    document.body.addEventListener("keyup", function (e) {
+        keys[e.keyCode] = false;
+    });
+
+    document.body.addEventListener("keydown", function (e) {
+        keys[e.keyCode] = true;
+    });
+
+</script>
 
 </html>
