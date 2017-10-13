@@ -31,13 +31,23 @@ io.on('connection', function (socket) {
         players[socket.id] = {
             x: 300,
             y: 300,
+            missle: {
+                x: -1,
+                y: -1,
+                direction: {
+                    up: false,
+                    down: false,
+                    left: false,
+                    right: false
+                }
+            },
             color: 'rgb(' + Math.trunc(Math.random() * 255) + ',' + Math.trunc(Math.random() * 255) + ',' + Math.trunc(Math.random() * 255) + ')'
         };
     });
 
     socket.on('movement', function (movement) {
-        //checkBoundsAndPerformMovement(players, socket.id, movement);
         performMovement(players, socket.id, movement);
+        fireMissles(players, socket.id, movement);
         checkAllCollisions(players, socket.id);
     });
 
@@ -45,6 +55,38 @@ io.on('connection', function (socket) {
         delete players[socket.id];
     });
 });
+
+function fireMissles(players, socketId, movement){
+    // check player direction and fire missle in that direction.
+
+    var player = players[socketId] || {};
+    var missle = player.missle;
+    if(!missle) return;
+
+    // reset and fire new missle
+    if(movement.shooting) {
+        missle = {
+            x: player.x,
+            y: player.y,
+            direction: movement
+        }
+        return;
+    }
+
+    // otherwise, check if old missle exists. update position as necessary.
+    if (missle.direction.left && !(missle.x - 15 < 0)) {
+        missle.x -= 10;
+    }
+    if (missle.right && !(missle.x + 15 > 800)) {
+        missle.x += 10;
+    }
+    if (missle.up && !(missle.y - 15 < 0)) {
+        missle.y -= 10;
+    }
+    if (missle.down && !(missle.y + 15 > 600)) {
+        missle.y += 10;
+    }
+}
 
 function checkAllCollisions(players, socketId) {
     var player = players[socketId] || {};

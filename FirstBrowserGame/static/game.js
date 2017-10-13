@@ -4,7 +4,8 @@ var movement = {
   up: false,
   down: false,
   left: false,
-  right: false
+  right: false,
+  shooting: false
 }
 document.addEventListener('keydown', function(event) {
   switch (event.keyCode) {
@@ -19,6 +20,9 @@ document.addEventListener('keydown', function(event) {
       break;
     case 83: // S
       movement.down = true;
+      break;
+    case 32: // spacebar
+      movement.shooting = true;
       break;
   }
 });
@@ -35,6 +39,9 @@ document.addEventListener('keyup', function(event) {
       break;
     case 83: // S
       movement.down = false;
+      break;
+    case 32: // spacebar
+      movement.shooting = false;
       break;
   }
 });
@@ -58,6 +65,15 @@ socket.on('state', function(players){
         context.fillStyle = color;
         context.beginPath();
         context.arc(player.x, player.y, 10, 0, (2 * Math.PI));
+        context.fill();
+
+        // TODO: render the player's missle.
+        var missle = player.missle;
+        if(!missle) return;
+        if(missle.x == -1 || missle.y == -1) return;
+        context.fillStyle = color;
+        context.beginPath();
+        context.arc(missle.x, missle.y, 5, 0, (2 * Math.PI));
         context.fill();
     }
 });
