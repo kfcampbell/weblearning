@@ -62,6 +62,7 @@ function fireMissles(players, socketId, movement){
     var player = players[socketId] || {};
     var missle = player.missle;
     if(!missle) return;
+    if(missle.x < 0 || missle.y < 0) return;
 
     // reset and fire new missle
     if(movement.shooting) {
