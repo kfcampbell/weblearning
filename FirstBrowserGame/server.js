@@ -88,21 +88,23 @@ function fireMissles(players, socketId, movement) {
 function checkAllCollisions(players, socketId) {
     var player = players[socketId] || {};
     for (var key in players) {
-        if (key != socketId) {
-            if (determineCollision(player, players[key])) {
-                // broadcast event here to respawn player
-                delete players[key];
+        // iterate through missles. check to see if any missle hit a player.
+        var player = players[key];
+        var missle = player.missle;
+        if (!missle || missle.x < 0 || missle.y < 0) continue;
+
+        for (var otherKey in players) {
+            if (key != otherKey) {
+                // check missle collision here
+                var otherPlayer = players[otherKey];
+                if (missle.x >= otherPlayer.x - 15 && missle.x <= otherPlayer.x + 15) {
+                    if (missle.y >= otherPlayer.y - 15 && missle.y <= otherPlayer.y + 15) {
+                        delete players[otherKey];
+                    }
+                }
             }
         }
     }
-}
-
-function determineCollision(playerOne, playerTwo) {
-    /*if(determineXCollision(playerOneMovement, playerOne, playerTwo) && determineYCollision(playerOneMovement, playerOne, playerTwo)){
-        return true;
-    }*/
-    return false;
-
 }
 
 function performMovement(players, socketId, movement) {
@@ -120,26 +122,6 @@ function performMovement(players, socketId, movement) {
     if (movement.down && !(player.y + 15 > 600)) {
         player.y += 5;
     }
-}
-
-function determineXCollision(playerOne, playerTwo) {
-    if (playerOne.x - 15 >= playerTwo.x + 15 && playerOne.x - 15 <= playerTwo.x + 15) {
-        return true;
-    }
-    if (playerOne.x + 15 >= playerTwo.x - 15 && playerOne.x - 15 <= playerTwo.x - 15) {
-        return true;
-    }
-    return false;
-}
-
-function determineYCollision(playerOne, playerTwo) {
-    if (playerOne.y - 15 >= playerTwo.y + 15 && playerOne.y - 15 <= playerTwo.y + 15) {
-        return true;
-    }
-    if (playerOne.y + 15 >= playerTwo.y - 15 && playerOne.y + 15 <= playerTwo.y - 15) {
-        return true;
-    }
-    return false;
 }
 
 setInterval(function () {
