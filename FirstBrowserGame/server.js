@@ -76,13 +76,13 @@ function fireMissles(players, socketId, movement) {
     if (player.missle.direction.left && !(player.missle.x - 15 < 0)) {
         player.missle.x -= 10;
     }
-    if (player.missle.right && !(player.missle.x + 15 > 800)) {
+    if (player.missle.direction.right && !(player.missle.x + 15 > 800)) {
         player.missle.x += 10;
     }
-    if (player.missle.up && !(player.missle.y - 15 < 0)) {
+    if (player.missle.direction.up && !(player.missle.y - 15 < 0)) {
         player.missle.y -= 10;
     }
-    if (player.missle.down && !(player.missle.y + 15 > 600)) {
+    if (player.missle.direction.down && !(player.missle.y + 15 > 600)) {
         player.missle.y += 10;
     }
 }
