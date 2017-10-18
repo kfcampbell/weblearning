@@ -59,11 +59,10 @@ io.on('connection', function (socket) {
 function fireMissles(players, socketId, movement) {
     var player = players[socketId] || {};
 
-    // reset and fire new missle
     if (movement.shooting) {
         player.missle = {
-            x: player.x + 20,
-            y: player.y + 20,
+            x: player.x,
+            y: player.y,
             direction: movement
         }
         return;
@@ -72,17 +71,16 @@ function fireMissles(players, socketId, movement) {
     if (!player.missle) return;
     if (player.missle.x < 0 || player.missle.y < 0) return;
 
-    // otherwise, check if old missle exists. update position as necessary.
-    if (player.missle.direction.left && !(player.missle.x - 15 < 0)) {
+    if (player.missle.direction.left && !(player.missle.x - 10 < 0)) {
         player.missle.x -= 10;
     }
-    if (player.missle.direction.right && !(player.missle.x + 15 > 800)) {
+    if (player.missle.direction.right && !(player.missle.x + 10 > 800)) {
         player.missle.x += 10;
     }
-    if (player.missle.direction.up && !(player.missle.y - 15 < 0)) {
+    if (player.missle.direction.up && !(player.missle.y - 10 < 0)) {
         player.missle.y -= 10;
     }
-    if (player.missle.direction.down && !(player.missle.y + 15 > 600)) {
+    if (player.missle.direction.down && !(player.missle.y + 10 > 600)) {
         player.missle.y += 10;
     }
 }
