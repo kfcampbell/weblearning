@@ -72,7 +72,7 @@ socket.on('state', function (players) {
     // render player's missle.
     var missle = player.missle;
     if (!missle) return;
-    if (missle.x < 0 || missle.y < 0) return;
+    if (missle.x < 0 || missle.y < 0) continue;
     context.fillStyle = color;
     context.beginPath();
     context.arc(missle.x, missle.y, 5, 0, (2 * Math.PI));
