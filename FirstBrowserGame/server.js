@@ -56,36 +56,34 @@ io.on('connection', function (socket) {
     });
 });
 
-function fireMissles(players, socketId, movement){
-    // check player direction and fire missle in that direction.
-
+function fireMissles(players, socketId, movement) {
     var player = players[socketId] || {};
-    var missle = player.missle;
-    if(!missle) return;
-    if(missle.x < 0 || missle.y < 0) return;
 
     // reset and fire new missle
-    if(movement.shooting) {
-        missle = {
-            x: player.x,
-            y: player.y,
+    if (movement.shooting) {
+        player.missle = {
+            x: player.x + 20,
+            y: player.y + 20,
             direction: movement
         }
         return;
     }
 
+    if (!player.missle) return;
+    if (player.missle.x < 0 || player.missle.y < 0) return;
+
     // otherwise, check if old missle exists. update position as necessary.
-    if (missle.direction.left && !(missle.x - 15 < 0)) {
-        missle.x -= 10;
+    if (player.missle.direction.left && !(player.missle.x - 15 < 0)) {
+        player.missle.x -= 10;
     }
-    if (missle.right && !(missle.x + 15 > 800)) {
-        missle.x += 10;
+    if (player.missle.right && !(player.missle.x + 15 > 800)) {
+        player.missle.x += 10;
     }
-    if (missle.up && !(missle.y - 15 < 0)) {
-        missle.y -= 10;
+    if (player.missle.up && !(player.missle.y - 15 < 0)) {
+        player.missle.y -= 10;
     }
-    if (missle.down && !(missle.y + 15 > 600)) {
-        missle.y += 10;
+    if (player.missle.down && !(player.missle.y + 15 > 600)) {
+        player.missle.y += 10;
     }
 }
 
@@ -111,7 +109,7 @@ function determineCollision(playerOne, playerTwo) {
 
 function performMovement(players, socketId, movement) {
     var player = players[socketId] || {};
-    
+
     if (movement.left && !(player.x - 15 < 0)) {
         player.x -= 5;
     }

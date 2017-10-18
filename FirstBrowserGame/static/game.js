@@ -57,10 +57,10 @@ var canvas = document.getElementById('canvas');
 canvas.width = 800;
 canvas.height = 600;
 var context = canvas.getContext('2d');
+
 socket.on('state', function (players) {
   context.clearRect(0, 0, 800, 600);
   for (var id in players) {
-
     // render player
     var player = players[id];
     var color = player.color;
@@ -70,12 +70,12 @@ socket.on('state', function (players) {
     context.fill();
 
     // render player's missle.
-    /*var missle = player.missle;
+    var missle = player.missle;
     if (!missle) return;
     if (missle.x < 0 || missle.y < 0) return;
     context.fillStyle = color;
     context.beginPath();
     context.arc(missle.x, missle.y, 5, 0, (2 * Math.PI));
-    context.fill();*/
+    context.fill();
   }
 });
