@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Stream from './components/Stream';
 import registerServiceWorker from './registerServiceWorker';
 
 const tracks = [
@@ -12,13 +13,7 @@ const tracks = [
 ];
 
 ReactDOM.render(
-    <div>
-        {
-            tracks.map((track) => {
-                return <div className='track'>{track.title}</div>;
-            })
-        }
-    </div>,
+    <Stream tracks={tracks} />,
     document.getElementById('root')
 );
 
