@@ -3,14 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "eslint": "^4.12.0",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
-    "react-scripts": "1.0.17"
+    "react-scripts": "1.0.17",
+    "redux": "^3.7.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test:watch": "npm run test -- --watch"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "jest": "^21.2.1",
+    "jest-cli": "^21.2.1",
+    "jsdom": "^11.5.1",
+    "mocha": "^4.0.1"
   }
 }
