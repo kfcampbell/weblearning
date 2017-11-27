@@ -14,7 +14,7 @@ const tracks = [
     }
 ];
 
-const store = configureStore;
+const store = configureStore();
 store.dispatch(actions.setTracks(tracks));
 
 ReactDOM.render(
