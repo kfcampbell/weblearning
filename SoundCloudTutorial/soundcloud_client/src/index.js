@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import configureStore from './stores/configureStore';
 import * as actions from './actions';
-import Stream from './components/Stream';
+import Stream from './components/Stream/index'; // should maybe be presenter????
 import registerServiceWorker from './registerServiceWorker';
 
 const tracks = [
