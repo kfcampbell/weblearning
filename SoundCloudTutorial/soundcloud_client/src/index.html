@@ -6,12 +6,16 @@
 <body>
   <h1>Spotify Web Playback SDK Quick Start Tutorial</h1>
   <h2>Open your console log: <code>View > Developer > JavaScript Console</code></h2>
+  <button onclick="toggleMusic()">play/pause music!</button>
+  <button onclick="previousTrack()">previous song</button>
+  <button onclick="nextTrack()">next song</button>
 
   <script src="https://sdk.scdn.co/spotify-player.js"></script>
   <script>
+  var player;
   window.onSpotifyPlayerAPIReady = () => {
-    const token = 'token goes here'
-    const player = new Spotify.Player({
+    const token = 'token goes here';
+    player = new Spotify.Player({
       name: 'Web Playback SDK Quick Start Player',
       getOAuthToken: cb => { cb(token); }
     });
@@ -28,10 +32,28 @@
     // Ready
     player.on('ready', data => {
       console.log('Ready with Device ID', data.device_id);
+      //player.seek(60 * 1000);
+      //player.togglePlay();
     });
 
     // Connect to the player!
-    player.connect();
+    player.connect().then(function(success){
+      if(success) {
+        console.log('successfully connected to spotify')
+      }
+    });
+  }
+
+  function toggleMusic() {
+    player.togglePlay();
+  }
+
+  function previousTrack() {
+    player.previousTrack();
+  }
+
+  function nextTrack() {
+    player.nextTrack();
   }
   </script>
 </body>
